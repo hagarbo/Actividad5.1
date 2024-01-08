@@ -1,5 +1,5 @@
 <?php
-    require_once "conexion.php";
+require_once "conexion.php";
 
 /**
  * findAllPublishers
@@ -25,7 +25,7 @@ function findUser(string $email): array
     $array = $pdostmt->fetchAll(PDO::FETCH_ASSOC);
     return $array;
 }
-function crear_usuario(array $data): bool
+function createUser(array $data): bool
 {
     try {
         $conProyecto = getConnection();
@@ -41,21 +41,18 @@ function crear_usuario(array $data): bool
         if ($pdostmt_user->execute()) $user_id = $conProyecto->lastInsertId();
         else throw new Exception();
 
-        if ($data["users"] != null) {
-            //Inserciones en bookauthors
-            $pdostmt_c_book_authors = $conProyecto->prepare("INSERT INTO book_authors (book_id,author_id) 
-                                            VALUES (:book_id,:author_id)");
-            $pdostmt_c_book_authors->bindParam("book_id", $user_id);
-            foreach ($data["users"] as $users_id) {
-                $pdostmt_c_book_authors->bindParam("author_id", $users_id);
-                if (!$pdostmt_c_book_authors->execute()) throw new Exception();
-            }
-        }
+        //Creamos la referencia en la tabla usuario_rol
+        $pdostmt_user_rol = $conProyecto->prepare("INSERT INTO usuario_rol (idUsuario,idRol) 
+                                    VALUES (:user_id,:rol_id)");
+        $pdostmt_user_rol->bindParam("user_id", $user_id);
+        $pdostmt_user_rol->bindParam("rol_id", $data["rol_id"]);
+        if (!$pdostmt_user_rol->execute()) throw new Exception();
 
+        //Finaliza la transaccion
         $conProyecto->commit();
     } catch (Exception $e) {
         $conProyecto->rollBack();
-        echo "Ocurrio un error al intentar crear el nuevo libro, mensaje: " . $e->getMessage();
+        echo "Ocurrio un error al intentar crear el usuario, mensaje: " . $e->getMessage();
         return false;
     }
 
