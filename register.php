@@ -16,8 +16,22 @@ $roles = findAllRols();
 
 // Leer los datos del formulario y comprobar que esten bien
 
-if ($_POST['inputEmail'] && $_POST['inputEmail'] ){
+if ($_POST['inputEmail'] && $_POST['inputPassword'] && $_POST['checkPassword'] && $_POST['inputRol']){
+    $email = $_POST['inputEmail'];
+    $pwd = $_POST['inputPassword'];
+    $checkPwd = $_POST['checkPassword'];
+    $rolId = $_POST['inputRol'];
     
+// Comprobar que el usuario no exista ya
+    $user = findUser($email);
+    if ($user == null) {
+    //añadir usuario, comprobar contraseñas coincidan
+        if ($pwd == $checkPwd) {
+        
+        }
+    } 
+    else { //error de que existe usuario
+    };
 }
 
 // Comprobar que el usuario no exista ya
@@ -44,7 +58,7 @@ if ($_POST['inputEmail'] && $_POST['inputEmail'] ){
             </div>
             <div class="mb-3">
                 <label class="" for="inputRol">Seleccione el rol:</label>
-                <select>
+                <select id="inputRol">
                     <?php
                         foreach ($roles as $rol) {
                         echo "<option value=".$rol['id'] .">". $rol['name'] ."</option>";
