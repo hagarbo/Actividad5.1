@@ -31,10 +31,17 @@ if (isset(
     if ($user == null) {
         //añadir usuario, comprobar contraseñas coincidan
         if ($pwd == $checkPwd) {
+            createUser($email);
+        } else { //alerta de que contraseñas distintas
+            $alertPwdDistinta = "Las contraseñas no coinciden";
+            echo "<div class='alert alert-warning' role='alert'>.$alertPwdDistinta.</div>";
         }
     } else { //error de que existe usuario
     };
+    $alertUserExist = "Email incorrecto";
+    echo "<div class='alert alert-warning' role='alert'>.$alertUserExist.</div>";
 }
+
 
 ?>
 
