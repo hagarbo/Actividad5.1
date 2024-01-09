@@ -32,9 +32,16 @@ if (isset(
     if ($user == null) {
         //añadir usuario, comprobar contraseñas coincidan
         if ($pwd == $checkPwd) {
+            createUser($email);
+        }
+        else{//alerta de que contraseñas distintas
+         $alertPwdDistinta = "Las contraseñas no coinciden";
+         echo "<div class='alert alert-warning' role='alert'>.$alertPwdDistinta.</div>";
         }
     } else { //error de que existe usuario
-    };
+        $alertUserExist = "Email incorrecto";
+        echo "<div class='alert alert-warning' role='alert'>.$alertUserExist.</div>";
+    }
 }
 
 ?>
@@ -68,7 +75,9 @@ if (isset(
             <button type="submit" class="btn btn-primary">Registrar Usuario</button>
     </div>
     </form>
-    <div id="mensajes"></div>
+    <div id="mensajes"> 
+      
+    </div>
 </body>
 
 </html>
