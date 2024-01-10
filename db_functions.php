@@ -16,11 +16,23 @@ function findAllRols(): array
     $array = $pdostmt->fetchAll(PDO::FETCH_ASSOC);
     return $array;
 }
-function findUser(string $email): array
+function findUser(string $email): array | bool
 {
     $conProyecto = getConnection();
     $pdostmt = $conProyecto->prepare("SELECT * FROM usuario where email = ?");
     $pdostmt->execute([$email]);
+    //$pdostmt->debugDumpParams();
+    $array = $pdostmt->fetch(PDO::FETCH_ASSOC);
+    return $array;
+}
+
+function findRolsById(int $user_id): array
+{
+    $conProyecto = getConnection();
+    $pdostmt = $conProyecto->prepare("SELECT idRol, name from usuario_rol join rol 
+                                    ON usuario_rol.idRol = rol.id 
+                                    WHERE usuario_rol.idUsuario = ?");
+    $pdostmt->execute([$user_id]);
     //$pdostmt->debugDumpParams();
     $array = $pdostmt->fetchAll(PDO::FETCH_ASSOC);
     return $array;

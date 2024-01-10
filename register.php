@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="dark">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <title>Register</title>
 </head>
 
@@ -12,7 +13,7 @@
 require_once "db_functions.php";
 // Traer los roles de la bd
 $roles = findAllRols();
-
+$exito = false;
 // Leer los datos del formulario y comprobar que esten bien
 
 if (isset(
@@ -26,62 +27,63 @@ if (isset(
     $checkPwd = $_POST['checkPassword'];
     $rolId = $_POST['inputRol'];
 
+
     // Comprobar que el usuario no exista ya
     $user = findUser($email);
-    if ($user == null) {
+    if (!$user && $pwd == $checkPwd) {
         //añadir usuario, comprobar contraseñas coincidan
-        if ($pwd == $checkPwd) {
-            createUser($email);
-        } else { //alerta de que contraseñas distintas
-            $alertPwdDistinta = "Las contraseñas no coinciden";
-            echo "<div class='alert alert-warning' role='alert'>.$alertPwdDistinta.</div>";
-        }
-    } else { //error de que existe usuario
-    };
-    $alertUserExist = "Email incorrecto";
-    echo "<div class='alert alert-warning' role='alert'>.$alertUserExist.</div>";
+        $data = array(
+            "email" => $email,
+            "pwd" => password_hash($pwd, PASSWORD_BCRYPT),
+            "rol_id" => $rolId
+        );
+        $exito = createUser($data);
+    }
 }
-
 
 ?>
 
 <body>
-    <div class="container border border-3 rounded-4 mt-5  p-4" id="form-container">
-        <h1 class="h1 text-center pb-3 border-bottom">Registro de usuario</h1>
-        <form class="row g-3 p-5 fs-5">
-            <div class="col-md-12 mb-3 form-floating">
-                <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="algo@example.com" required>
-                <label for="inputEmail">Correo Electrónico</label>
+    <div class="container border border-3 rounded-4 mt-5 bg-light p-4 mb-3" id="form-container">
+        <h1 class="h1">Registro de usuario</h1>
+        <form class="p-3" method="post" action="register.php">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="inputEmail" name="inputEmail" aria-describedby="emailHelp" required>
+                <label for="inputEmail" class="form-label">Email</label>
             </div>
-            <div class="col-md-6 mb-3 form-floating">
-                <input type="password" class="form-control" id="inputPassword" placeholder="contraseña" required>
-                <label for="inputPassword">Contraseña</label>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="inputPassword" name="inputPassword" required>
+                <label for="inputPassword" class="form-label">Contraseña</label>
+
             </div>
-            <div class="col-md-6 mb-3 form-floating">
-                <input type="password" class="form-control" id="checkPassword" placeholder="contraseña" required>
-                <label for="checkPassword">Repita contraseña</label>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="checkPassword" name="checkPassword" required>
+                <label for="checkPassword" class="form-label">Repita contraseña</label>
+
             </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label" for="inputRol">Seleccione el rol:</label>
-                <select id="inputRol" class="form-select fs-5" required>
+            <div class="form-floating mb-3">
+                <select id="inputRol" class="form-select" name="inputRol" required>
                     <?php
                     foreach ($roles as $rol) {
                         echo "<option value=" . $rol['id'] . ">" . $rol['name'] . "</option>";
                     }
                     ?>
                 </select>
+                <label class="form-label" for="inputRol">Seleccione el rol</label>
             </div>
-            <div class="col-md-3 mb-3">
-
-            </div>
-
-            <button type="submit" class="btn btn-lg btn-info fs-5 col-md-3 mx-auto mt-5 mb-5">Registrar Usuario</button>
-
+            <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+        </form>
     </div>
-    </form>
-    <div id="mensajes"></div>
-
+    <div id="mensajes" class="container mb-3">
+        <?php
+        if (isset($_POST["inputEmail"])) {
+            if ($exito) {
+                echo "<div class='alert alert-success' role='alert'>Usuario creado correctamente</div>";
+            } else {
+                echo "<div class='alert alert-danger' role='alert'>Error al crear el usuario</div>";
+            }
+        }
+        ?></div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
 </html>
